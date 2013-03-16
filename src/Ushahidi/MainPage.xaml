@@ -1,0 +1,136 @@
+﻿<common:LayoutAwarePage 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"     
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:local="using:Ushahidi" 
+    xmlns:common="using:Ushahidi.Common" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:Maps="using:Bing.Maps"
+    x:Name="pageRoot"
+    x:Class="Ushahidi.MainPage"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Mode=Self}}"
+    mc:Ignorable="d">
+
+    <common:LayoutAwarePage.Resources>
+
+        <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
+        <x:String x:Key="AppName">Ushahidi</x:String>
+        
+        <DataTemplate x:Key="Standard130DeploymentTemplate">
+            <Grid Height="110" Margin="6" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="110" Height="110">
+                    <Image Source="{Binding ss1,  Converter={StaticResource imageConverter}}" Stretch="UniformToFill" AutomationProperties.Name="{Binding name}"/>
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10,0,0,0">
+                    <TextBlock Text="{Binding name}" Style="{StaticResource TitleTextStyle}" TextWrapping="NoWrap"/>
+                    <TextBlock Text="{Binding description}" Style="{StaticResource BodyTextStyle}" MaxHeight="60"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+    </common:LayoutAwarePage.Resources>
+
+    <Grid Style="{StaticResource LayoutRootStyle}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="96"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+
+
+        <VisualStateManager.VisualStateGroups>
+
+            <!-- Visual states reflect the application's view state -->
+            <VisualStateGroup x:Name="ApplicationViewStates">
+                <VisualState x:Name="FullScreenLandscape"/>
+                <VisualState x:Name="Filled"/>
+
+                <!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
+                <VisualState x:Name="FullScreenPortrait">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemGridView" Storyboard.TargetProperty="Padding">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="96,136,86,56"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <!--
+                    The back button and title have different styles when snapped, and the list representation is substituted
+                    for the grid displayed in all other view states
+                -->
+                <VisualState x:Name="Snapped">
+                    <Storyboard>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemListView" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemGridView" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+
+
+        <!-- Back button and page title -->
+        <Grid Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Rectangle HorizontalAlignment="Left" Height="73"  VerticalAlignment="Top" Width="299" Grid.ColumnSpan="2" Margin="30,10,0,0">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="Assets/Logo_iPad.png" Stretch="Uniform"/>
+                </Rectangle.Fill>
+
+            </Rectangle>
+        </Grid>
+        
+	<StackPanel HorizontalAlignment="Left" Height="626" Margin="8,8,0,0" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Width="665" >
+            
+            <ListView x:Name="DeploymentListView" ItemTemplate="{StaticResource Standard130DeploymentTemplate}"  HorizontalAlignment="Left" Height="624" Margin="0"  VerticalAlignment="Top" Width="665" SelectionChanged="DeploymentListView_SelectionChanged">
+                <ListView.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="Assets/placeholder.png" Height="50" Margin="0,0,18,20" 
+                   Stretch="UniformToFill" AutomationProperties.Name="{Binding Title}"/>
+                        <TextBlock Text="Maps" Margin="0,0,18,20" 
+                       Style="{StaticResource SubheaderTextStyle}" MaxHeight="60" VerticalAlignment="Center" Height="40"/>
+                    </StackPanel>
+                </ListView.Header>
+            </ListView>
+        </StackPanel>
+
+        <StackPanel HorizontalAlignment="Left" Height="626" Margin="30,8,0,0" Grid.Row="1" VerticalAlignment="Top" Width="617" >
+          
+            <Maps:Map Credentials="AkWSrd1jbnq4NirGeUs6hrFzS0o0PyyAgQsNMnr38MAnVEKPEMaUMFo6UBhKCL9V" x:Name="DeploymentMap"  HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Height="624" Width="617"/>
+        	
+        </StackPanel>
+        <ProgressBar x:Name="ProgressBar" Visibility="Visible" IsIndeterminate="True" Grid.ColumnSpan="2" Margin="340,288,343,378" Grid.Row="1" />
+        
+    </Grid>
+   
+	<Page.BottomAppBar>
+    <AppBar x:Name="bottomAppBar" Padding="10,0,10,0">
+        <Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+               <Button Name="RefreshButton" Style="{StaticResource RefreshAppBarButtonStyle}" Click="RefreshButton_Click_1"/>
+            
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">             
+                <Button Name="AddButton" Style="{StaticResource AddAppBarButtonStyle}" Click="AddButton_Click_1"/>
+            </StackPanel>
+        </Grid>
+    </AppBar>
+</Page.BottomAppBar>
+	 
+</common:LayoutAwarePage>
